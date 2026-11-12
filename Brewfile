@@ -22,9 +22,6 @@ brew "yazi"
 brew "btop"
 brew "fastfetch"
 brew "neovim"
-brew "helix"
-# used by the rm() wrapper: plain `rm` goes to the Trash, `rm -rf` stays real
-brew "trash"
 
 # ── terminal / window manager / keyboard ────────────────────────────
 cask "ghostty"

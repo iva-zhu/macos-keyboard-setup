@@ -107,7 +107,6 @@ elif [[ $OSTYPE == linux* ]]; then
 	alias pku='sudo pkgfile -u'
 	alias logs='sudo journalctl -f'
 	alias services='systemctl --type=service --state=running'
-	alias hx='helix'
 fi
 
 # Подсказка пакета при неизвестной команде (только серверe; brew which-formula на mac слишком медленный)
@@ -179,13 +178,3 @@ alias тмшь="nvim"
 [[ -n ${SSH_HOST:-} ]] && alias ыыр="ssh ${SSH_HOST:?}"
 alias я='z'
 alias гзвфеу='update'
-
-# ── AeroSpace (mac) ───────────────────────────────────────────────
-if [[ $OSTYPE == darwin* ]] && command -v aerospace >/dev/null 2>&1 && command -v fzf >/dev/null 2>&1; then
-	# ff: выбрать окно AeroSpace через fzf и переключиться на него
-	ff() {
-		aerospace list-windows --all \
-			| fzf --prompt='window ❯ ' --delimiter='|' --with-nth=2,3 \
-				--bind 'enter:execute-silent(bash -c "aerospace focus --window-id {1}")+abort'
-	}
-fi

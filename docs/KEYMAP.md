@@ -35,6 +35,7 @@ Layouts: workspace `i`, `iii`, `v` are `h_tiles` with a 55% master column;
 | `Hyper+;` | service mode (below) |
 | `Cmd+Shift+Enter` | new Ghostty window |
 | `Hyper+e` | new Finder window |
+| `Hyper+w` | open your browser (bundle id from `~/.config/aerospace/browser.conf`) |
 
 ### service mode (`Hyper+;`)
 
@@ -79,7 +80,6 @@ Handy commands and functions:
 
 | Command | Action |
 |---|---|
-| `ff` | pick an AeroSpace window with fzf and focus it |
 | `y` / `ya` | yazi that changes the shell directory on exit |
 | `extract <archive>` | unpack anything bsdtar understands |
 | `copyfile <file>` / `copypath [path]` | clipboard from the shell |

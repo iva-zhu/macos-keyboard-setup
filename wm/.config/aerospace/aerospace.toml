@@ -53,6 +53,11 @@ gaps.outer.top = 8
     cmd-ctrl-alt-e = '''exec-and-forget osascript -e \
     'tell application "finder" to make new finder window' '''
 
+    # caps+w = браузер. Bundle id берётся из ~/.config/aerospace/browser.conf
+    # (одна строка, задаётся при установке), по умолчанию — Safari.
+    # exec-and-forget исполняет строку через bash, поэтому $HOME раскрывается.
+    cmd-ctrl-alt-w = 'exec-and-forget "$HOME/.config/aerospace/open-browser.sh"'
+
     # ── окно ──
     # dwm-like zoom: окно в фокусе → мастер (слот плейсхолдера 1 в [workspace-layout])
     cmd-enter = 'promote'

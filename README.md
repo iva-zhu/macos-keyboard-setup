@@ -10,16 +10,20 @@ person's config, kept small enough to read.
 ## What's inside
 
 ```
-zsh/                 modular zsh config: rc, options, aliases, keybindings,
-                     clipboard, completions, p10k
-terminal/ghostty/    terminal config + documented keybinds
-wm/aerospace/        tiling window manager config (dwm-style master/stack)
-wm/borders/          focus ring for the active window
-keys/karabiner.json  Caps Lock -> Hyper, Option+hjkl -> arrows, Option+Tab
-tools/               yazi, btop, fastfetch, helix, neovim
-install/             Brewfile, bootstrap.sh, stow.sh
+zsh/                 .zshrc, .zsh_aliases, .p10k.zsh, ... — file names are the
+                     real ones in $HOME, so stow can just link them
+ghostty/.config/     terminal config + documented keybinds
+wm/.config/          AeroSpace (dwm-style master/stack) + borders + open-browser.sh
+keys/.config/        karabiner.json: Caps Lock -> Hyper, Option+hjkl -> arrows
+tools/.config/       yazi, btop, fastfetch, neovim
+Brewfile             everything installable, one file
+install.sh           interactive setup + stow deploy (the one command)
 docs/                KEYMAP.md, WHY-FAST.md
 ```
+
+Every top-level directory is a [GNU Stow](https://www.gnu.org/software/stow/)
+package that mirrors `$HOME`. That is the whole design: no rename mapping, no
+generator, `~/.zsh_aliases` in the repo is `~/.zsh_aliases` on the machine.
 
 ## Keymap
 
@@ -32,11 +36,12 @@ Full tables in [docs/KEYMAP.md](docs/KEYMAP.md). The short version:
 | `Hyper+1..9` | workspace |
 | `Hyper+Shift+1..9` | move window to workspace |
 | `Hyper+Enter` | promote window to master |
+| `Hyper+W` | open your browser (bundle id set at install time) |
+| `Hyper+E` | new Finder window |
 | `Hyper+;` | AeroSpace service mode |
 | `Cmd+t` / `Cmd+Shift+t` | Ghostty split right / down |
 | `Ctrl+O` | copy the command line to the clipboard |
 | `Esc Esc` | toggle the `sudo` prefix |
-| `ff` | pick a window with fzf |
 
 ## Install
 
@@ -46,23 +51,37 @@ branch too, but see *Not included*).
 ```sh
 git clone <this repo> ~/Projects/macos-keyboard-setup
 cd ~/Projects/macos-keyboard-setup
-./install/bootstrap.sh          # Xcode CLT -> Homebrew -> bundle -> dry-run links
-./install/bootstrap.sh --apply  # same, but actually create the symlinks
+./install.sh
 ```
 
-`install/stow.sh` can be run on its own. It is a dry run by default; with
-`--apply` it symlinks the repo files into `$HOME` and moves anything it would
-overwrite to `~/.dotfiles-removed-<date>/` — no file is ever deleted.
-
-Machine-specific values (LAN host, SSH host, local ports) are not in the repo:
+One command. It asks a handful of questions, then symlinks everything into
+`$HOME` with `stow --no-folding`. Options:
 
 ```sh
-cp zsh/setup.local.example.zsh ~/.config/setup.local.zsh
-chmod 600 ~/.config/setup.local.zsh   # fill in your own values
+./install.sh --dry-run    # print what would happen, change nothing
+./install.sh --no-prompt  # no questions, keep current values
 ```
 
-Without that file the shell still starts cleanly; the tunnel aliases are simply
-not defined.
+The questions are all optional — press Enter to keep the shown default, or `-`
+to clear the value:
+
+| Question | Where it lands | If skipped |
+|---|---|---|
+| SSH host | `SSH_HOST` in `~/.config/setup.local.zsh` | remote aliases are not created |
+| LAN host | `HOME_LAN_HOST` | the tunnel alias is not created |
+| Ollama ports | `OLLAMA_*_PORT` | the documented defaults are used |
+| Browser bundle id | `~/.config/aerospace/browser.conf` | `Hyper+W` opens Safari |
+
+Nothing machine-specific is ever written into the repo. Files that would
+conflict are moved to `~/.dotfiles-removed-<date>/` — nothing is deleted. Stow
+itself is idempotent, so re-running `install.sh` after a `git pull` is safe.
+
+Prefer plain stow? The packages work on their own:
+
+```sh
+stow --no-folding -t ~ zsh ghostty wm keys tools   # deploy
+stow -D -t ~ zsh ghostty wm keys tools             # remove the links
+```
 
 Some files need a manual step after linking:
 
