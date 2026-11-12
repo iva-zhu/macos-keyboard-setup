@@ -105,13 +105,39 @@ Details and the profiling method: [docs/WHY-FAST.md](docs/WHY-FAST.md).
 _(placeholder — a screenshot of AeroSpace with two workspaces and the prompt
 goes here: `docs/screenshot.png`)_
 
+## State of this setup
+
+What is actually applied on the machine this was exported from (2026-11), and
+where it stops. Read this before assuming a package is in use.
+
+| Area | State |
+|---|---|
+| zsh (10 files) | **applied from this repo** via stow; 60–70 ms cold start on macOS, 19 ms on the Linux box |
+| ghostty config + keybinds | **applied from this repo** |
+| tools (nvim, yazi, btop, fastfetch) | **applied from this repo** |
+| AeroSpace (`wm`) | **not** deployed from this repo. The published file has generalized bundle ids (Chrome, Firefox); the personal copy keeps private ids and stays out of git |
+| Karabiner (`keys`) | **not** deployed from this repo, same reason: device matching needs the real keyboard MAC, the published file has `00-00-…` |
+| Hyper+W browser | works through `open-browser.sh` + `~/.config/aerospace/browser.conf`; the bundle id is entered at install time and never committed |
+| `setup.local.zsh` | present locally (600). Without it the ssh/tunnel aliases simply do not exist |
+| Linux branches | partially present in the published files (`platform_path`, `clipboard`, `misc`, the `elif linux*` arm in aliases) and used on an Arch server — but the install script and the Windows/mac paths are untested outside macOS |
+| p10k | 17 segments for package managers that are not installed (asdf, pyenv, nvm, conda, …) are commented out |
+| screenshot | placeholder only, no image committed |
+| nvim pack lock | not shipped, plugin versions float and nvim regenerates the lock |
+
+Known gaps, stated plainly:
+
+* No CI, no automated install test on a clean macOS VM — `install.sh` has only
+  been exercised by hand and in throwaway `$HOME`s.
+* The interactive prompts are untested on a non-tty; `--no-prompt` is the
+  supported path for scripts.
+* `stow --no-folding` is intentional: it keeps `~/.config/aerospace/` a real
+  directory so `browser.conf` can live next to the symlinked files. Folding
+  would break that.
+* Ghostty shaders are not included (the upstream directory is a nested git
+  repository) and stay commented out in the config.
+
 ## Not included
 
-* **Linux branches.** The zsh config (and `platform_path`, `clipboard`, some
-  aliases) has an Arch Linux branch, used on a home server. It is deliberately
-  left out of the published tree for now — the structure (`.zsh_platform_path`
-  with an `elif linux*` arm) allows adding it later without rearranging
-  anything.
 * **Private app bundle ids.** `wm/.config/aerospace/aerospace.toml` has a commented
   placeholder where personal bundle ids go. The published rules only use
   publicly known applications.
