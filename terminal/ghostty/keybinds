@@ -1,0 +1,100 @@
+# # Ghostty keybinds: documented defaults plus the split bindings that differ from stock.
+# Loaded via `config-file = keybinds` from `config`.
+
+# =====================================================================
+#  ДЕФОЛТНЫЕ ШОРТКАТЫ GHOSTTY (macOS)
+#
+#  Этот файл — чистая документация: всё здесь закомментировано и на
+#  работу терминала не влияет. Все перечисленные бинды уже дефолтные,
+#  переопределять ничего не нужно.
+#
+#  super = cmd (⌘)
+#
+#  Переопределить бинд:   keybind = trigger=action
+#  Убрать бинд:           keybind = trigger=unbind
+#  Полный дефолтный список: ghostty +list-keybinds --default
+# =====================================================================
+
+# --- Конфиг и приложение ---
+# cmd+,            открыть конфиг в редакторе
+# cmd+shift+,      перечитать конфиг (reload)
+# cmd+q            выйти из Ghostty
+# cmd+shift+p      командная палитра (все действия поиском)
+# cmd+alt+i        инспектор терминала (дебаг)
+
+# --- Вкладки (замена tmux-окон) ---
+# cmd+t            новая вкладка
+# cmd+w            закрыть текущий сплит/панель
+# cmd+alt+w        закрыть вкладку целиком
+# cmd+shift+w      закрыть окно
+# cmd+alt+shift+w  закрыть все окна
+# cmd+shift+[/]    предыдущая/следующая вкладка
+# ctrl+tab / ctrl+shift+tab   то же самое
+# cmd+1..8         прыжок на вкладку по номеру
+# cmd+9            последняя вкладка
+
+# --- Сплиты (замена tmux-пейн-ов) ---
+keybind=super+t=new_split:right
+keybind=super+shift+t=new_split:down
+keybind = cmd+shift+h=goto_split:left
+keybind = cmd+shift+l=goto_split:right
+keybind = cmd+shift+k=goto_split:top
+keybind = cmd+shift+j=goto_split:bottom
+keybind = cmd+shift+z=toggle_split_zoom
+keybind = cmd+shift+e=equalize_splits
+
+# cmd+t            # сплит справа (вертикальная перегородка)
+# cmd+shift+t      # сплит вниз (горизонтальная перегородка)
+# cmd+[ / cmd+]    фокус на предыдущий/следующий сплит
+# cmd+alt+стрелки  фокус на сплит в направлении (up/down/left/right)
+# cmd+shift+enter  зум сплита на всё окно / обратно (tmux zoom-pane)
+# cmd+ctrl+стрелки ресайз сплита (шаг 10%)
+# cmd+ctrl+=       выровнять все сплиты поровну
+
+# --- Окна ---
+# cmd+n            новое окно приложения
+# cmd+enter        полный экран
+# cmd+ctrl+f       полный экран (альтернативный бинд)
+
+# --- Копипаст и выделение ---
+# cmd+c            копировать (смешивает выделение и буфер обмена)
+# cmd+v            вставить из буфера
+# cmd+shift+v      вставить из primary selection
+# cmd+a            выделить всё
+# shift+стрелки / page_up / page_down / home / end
+#                  до-выделение с клавиатуры
+# (копирование по выделению уже включено: copy-on-select)
+
+# --- Скролл и промпты ---
+# cmd+page_up / cmd+page_down   постраничный скролл
+# cmd+home / cmd+end            в самое начало / в конец буфера
+# cmd+j                         проскроллить к текущему выделению
+# cmd+стрелка вверх/вниз        прыжок к предыдущему/следующему промпту
+# cmd+k                         очистить экран
+
+# --- Поиск по буферу ---
+# cmd+f             начать поиск
+# cmd+e             искать выделенный текст
+# cmd+g / cmd+shift+g   следующее/предыдущее совпадение
+# cmd+shift+f или escape   выйти из поиска
+
+# --- Шрифт ---
+# cmd+= / cmd++     увеличить шрифт
+# cmd+-             уменьшить шрифт
+# cmd+0             сбросить к дефолтному размеру
+
+# --- Дамп экрана в файл (удобно для логов/репортов) ---
+# cmd+ctrl+shift+j  скопировать всё видимое на экране в буфер
+# cmd+shift+j       записать видимое в файл и вставить путь в терминал
+# cmd+alt+shift+j   записать видимое в файл и открыть его
+
+# --- Отмена ---
+# cmd+z / cmd+shift+t   undo
+# cmd+shift+z       redo
+
+# --- Эмуляция readline-биндов (работают как в shell) ---
+# cmd+стрелка вправо  end-of-line (Ctrl+E)
+# cmd+стрелка влево   beginning-of-line (Ctrl+A)
+# cmd+backspace       убить строку до начала (Ctrl+U)
+# alt+стрелка влево   назад на слово (Alt+B)
+# alt+стрелка вправо  вперёд на слово (Alt+F)

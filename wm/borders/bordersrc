@@ -1,0 +1,12 @@
+#!/bin/bash
+# JankyBorders: rounded 10px focus ring, amber on the active window.
+
+options=(
+	style=round
+	width=10.0
+	hidpi=on
+	active_color=0xFFCB9C03
+	inactive_color=0xff414550
+)
+
+borders "${options[@]}"

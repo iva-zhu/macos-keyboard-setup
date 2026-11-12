@@ -1,0 +1,10 @@
+# Yazi file manager: 1:2:6 columns, hidden files shown, sort by size, rounded borders.
+
+[mgr]
+ratio = [ 1, 2, 6 ]
+show_hidden = true
+sort_by = "size"
+sort_dir_first = true
+
+[ui]
+border = "rounded"  

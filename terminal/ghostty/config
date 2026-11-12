@@ -1,0 +1,115 @@
+# Ghostty terminal config: MesloLGS Nerd Font, translucency + blur, copy-on-select, macOS hidden titlebar.
+# Keybind documentation lives in `keybinds` next to this file.
+
+# --- Шрифты ---
+font-family = "MesloLGS NF"
+font-size = 20
+
+# --- Окно и отступы ---
+window-width = 157
+window-height = 42
+window-padding-x = 10
+window-padding-y = 0
+window-padding-color = extend
+window-padding-balance = false
+#title = " "
+
+# --- Прозрачность и блюр ---
+background-opacity = 0.8
+background-blur = 30
+
+# --- Курсор ---
+cursor-style = block
+shell-integration-features = no-cursor,ssh-env,ssh-terminfo
+cursor-style-blink = false
+#cursor-color = white
+#cursor-text = black
+
+# --- Взаимодействие ---
+mouse-hide-while-typing = true
+cursor-click-to-move = true
+mouse-scroll-multiplier = 2
+copy-on-select = true
+clipboard-read = allow
+clipboard-write = allow
+
+# --- Поведение ---
+auto-update-channel = tip
+
+# Уведомление, когда долгоранящаяся команда закончилась (окно не в фокусе)
+notify-on-command-finish = unfocused
+notify-on-command-finish-action = bell,notify
+notify-on-command-finish-after = 10s
+
+# Совместимость по SSH
+#term = xterm-256color
+
+# Новые вкладки открываются в текущей папке
+window-inherit-working-directory = true
+
+# --- macOS tweaks ---
+window-decoration = auto
+macos-window-buttons = hidden
+macos-titlebar-style = hidden
+macos-icon = xray
+
+# --- Полигон: похер на работу, просто тыкать (закрыто, справочник) ---
+# Тайтлбар: варианты вместо hidden
+#   native      — обычный системный тайтлбар
+#   transparent — системный, но прозрачный, сливается с фоном
+#   hidden      — что сейчас: скрыт, таб-полоска рипает в паддинг
+# macos-titlebar-style = transparent
+
+# Держать тень на окне без декораций (по умолчанию true)
+# macos-window-shadow = false
+
+# Тонкая тема самого окна, если автоподхват темы молчит
+# window-theme = auto | dark | light
+
+# Прозрачность: сигма-фон vs читабельность
+# background-opacity = 0.94
+# background-opacity = 0.7
+
+# Блюр фона: 10 — легкий, 30 — как сейчас, 100 — жесть
+# background-blur = 15
+
+# Минимум/максимум шрифта при Cmd+/Cmd-
+# font-size... шрифт тянется, а вот паддинг нет: попробовать
+# window-padding-x = 20
+# window-padding-y = 10
+# балансировать паддинг вокруг глифов (шоб текст не прилип)
+# window-padding-balance = true
+
+# Сколько держать окно при закрытии (отдаёт вкладку, может спасти от предпо́лья)
+# window-save-state = default
+
+# Еграут при ресайзе: всегда / после первого ресайза / никогда
+# resize-overlay = after-first
+
+# Три раза подумать перед закрытием с запущенным процессом
+# confirm-close-surface = false/true (default) — только если бесит вопрос "закрыть?"
+
+# Шрифты: жирность и настойка глифов
+# font-thicken = true
+# font-feature = ss01    # новый шрифт (lynx?), смотреть доступные nerd font
+# bold-is-bright = true  # блдит делать ярче вместо жирного
+
+# Быстрый дроп-даун терминал на хоткей (глобальный, как raycast)
+# quick-terminal-position = top
+# quick-terminal-screen = main
+# quick-terminal-size = 800x400
+
+# Скроллить колесом быстрее (по умолчанию 3 строки за тик)
+# mouse-scroll-multiplier (уже стоит = 2 в "Взаимодействии")
+
+# --- Цветовая тема ---
+theme = "light:Zenbones Light,dark:Broadcast"
+
+# --- Свистелки и перделки ---
+# Плавный шейдер на курсор
+# custom-shader = shaders/cursor_warp.glsl
+# custom-shader = shaders/cursor_tail.glsl
+
+# --- Мануал по шорткатам ---
+# Вынесен в отдельный файл, чтобы не мешаться под ногами.
+config-file = keybinds

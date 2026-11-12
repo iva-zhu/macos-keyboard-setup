@@ -1,0 +1,399 @@
+# AeroSpace window manager: dwm-style master/stack layouts, 9 persistent workspaces,
+# window rules by bundle id. Hyper = Caps Lock remapped in Karabiner (see keys/karabiner.json).
+
+config-version = 2
+
+after-startup-command = [
+    'layout --workspace i --root h_tiles',
+    'layout --workspace ii --root v_accordion',
+    'layout --workspace iii --root h_tiles',
+    'layout --workspace iv --root v_accordion',
+    'layout --workspace v --root h_tiles',
+    'exec-and-forget borders',
+]
+start-at-login = true
+auto-reload-config = true
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+accordion-padding = 25
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+automatically-unhide-macos-hidden-apps = false
+
+persistent-workspaces = [
+    "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix",
+]
+
+on-mode-changed = []
+focus-follows-mouse.enabled = false
+key-mapping.preset = 'qwerty'
+
+gaps.inner.horizontal = 25
+gaps.inner.vertical = 25
+gaps.outer.left = 25
+gaps.outer.right = 25
+gaps.outer.bottom = 12
+gaps.outer.top = 8
+
+# ═══════════════════════════════════════════
+# main mode — Caps Lock → Cmd+Ctrl+Opt (Hyper, без Shift)
+# ═══════════════════════════════════════════
+[mode.main.binding]
+    # cmd+shift+enter = terminal
+    cmd-shift-enter = '''exec-and-forget osascript -e '
+                           tell application "Ghostty"
+                               new window
+                           end tell'
+                      '''
+
+    # caps+e = finder (новое окно)
+    cmd-ctrl-alt-e = '''exec-and-forget osascript -e \
+    'tell application "finder" to make new finder window' '''
+
+    # ── окно ──
+    # dwm-like zoom: окно в фокусе → мастер (слот плейсхолдера 1 в [workspace-layout])
+    cmd-enter = 'promote'
+#    cmd-ctrl-alt-f = 'fullscreen'
+    # ── toggle floating ── (вернул на cmd-ctrl-alt-g, как было)
+    cmd-ctrl-alt-g = 'layout floating tiling'
+    cmd-ctrl-alt-q = 'close'
+
+    # ── раскладка ──
+    alt-period = 'layout tiles horizontal vertical'
+    alt-comma = 'layout accordion horizontal vertical'
+
+    # ── навигация ──
+    cmd-ctrl-alt-leftSquareBracket = 'workspace prev'
+    cmd-ctrl-alt-rightSquareBracket = 'workspace next'
+    cmd-ctrl-alt-h = 'focus left'
+    cmd-ctrl-alt-j = 'focus down'
+    cmd-ctrl-alt-k = 'focus up'
+    cmd-ctrl-alt-l = 'focus right'
+
+    # ── ресайз ──
+    cmd-ctrl-alt-minus = 'resize smart -50'
+    cmd-ctrl-alt-equal = 'resize smart +50'
+
+    # ── перемещение окна по тайлам ──
+    cmd-ctrl-alt-shift-h = 'move left'
+    cmd-ctrl-alt-shift-j = 'move down'
+    cmd-ctrl-alt-shift-k = 'move up'
+    cmd-ctrl-alt-shift-l = 'move right'
+
+    # ── режим изменения размера ──
+    cmd-ctrl-alt-r = 'mode resize'
+
+    # ── воркспейсы: цифры (переключение) ──
+    cmd-ctrl-alt-1 = 'workspace i'
+    cmd-ctrl-alt-2 = 'workspace ii'
+    cmd-ctrl-alt-3 = 'workspace iii'
+    cmd-ctrl-alt-4 = 'workspace iv'
+    cmd-ctrl-alt-5 = 'workspace v'
+    cmd-ctrl-alt-6 = 'workspace vi'
+    cmd-ctrl-alt-7 = 'workspace vii'
+    cmd-ctrl-alt-8 = 'workspace viii'
+    cmd-ctrl-alt-9 = 'workspace ix'
+
+    # ── переместить окно на workspace: цифры ──
+    cmd-ctrl-alt-shift-1 = 'move-node-to-workspace i --focus-follows-window'
+    cmd-ctrl-alt-shift-2 = 'move-node-to-workspace ii --focus-follows-window'
+    cmd-ctrl-alt-shift-3 = 'move-node-to-workspace iii --focus-follows-window'
+    cmd-ctrl-alt-shift-4 = 'move-node-to-workspace iv --focus-follows-window'
+    cmd-ctrl-alt-shift-5 = 'move-node-to-workspace v --focus-follows-window'
+    cmd-ctrl-alt-shift-6 = 'move-node-to-workspace vi --focus-follows-window'
+    cmd-ctrl-alt-shift-7 = 'move-node-to-workspace vii --focus-follows-window'
+    cmd-ctrl-alt-shift-8 = 'move-node-to-workspace viii --focus-follows-window'
+    cmd-ctrl-alt-shift-9 = 'move-node-to-workspace ix --focus-follows-window'
+
+   # ── туда-обратно ──
+    cmd-ctrl-alt-tab = 'workspace-back-and-forth'
+    cmd-ctrl-alt-backtick = 'move-workspace-to-monitor --wrap-around next'
+
+    # ── service mode ──
+    cmd-ctrl-alt-semicolon = 'mode service'
+
+    # ── отключаем системные конфликты ──
+    cmd-h = []
+    cmd-alt-h = []
+    cmd-m = []
+
+# ═══════════════════════════════════════════
+# service mode — Caps+;
+# ═══════════════════════════════════════════
+[mode.service.binding]
+    esc = ['reload-config', 'mode main']
+    # ── toggle floating / balance ── (g — floating, s — balance; b занят воркспейсом)
+    g = ['layout floating tiling', 'mode main']
+    r = ['flatten-workspace-tree', 'mode main']
+    s = ['balance-sizes', 'mode main']
+    backspace = ['close-all-windows-but-current', 'mode main']
+    x = ['enable toggle']
+
+    # перемещение окна в воркспейс (цифры)
+    1 = ['move-node-to-workspace i --focus-follows-window', 'mode main']
+    2 = ['move-node-to-workspace ii --focus-follows-window', 'mode main']
+    3 = ['move-node-to-workspace iii --focus-follows-window', 'mode main']
+    4 = ['move-node-to-workspace iv --focus-follows-window', 'mode main']
+    5 = ['move-node-to-workspace v --focus-follows-window', 'mode main']
+    6 = ['move-node-to-workspace vi --focus-follows-window', 'mode main']
+    7 = ['move-node-to-workspace vii --focus-follows-window', 'mode main']
+    8 = ['move-node-to-workspace viii --focus-follows-window', 'mode main']
+    9 = ['move-node-to-workspace ix --focus-follows-window', 'mode main']
+
+    # громкость
+    down = 'volume down'
+    up = 'volume up'
+
+[mode.resize.binding]
+    esc = 'mode main'
+    h = 'resize width -50'
+    j = 'resize height +50'
+    k = 'resize height -50'
+    l = 'resize width +50'
+
+# ═══════════════════════════════════════════
+# АВТО-РАСКИДКА
+# Layout задаётся для workspace в after-startup-command.
+# Здесь только: сделать окно tiled и отправить в нужный workspace.
+# ═══════════════════════════════════════════
+
+# ── Picture-in-Picture windows: always floating ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.google.Chrome && test %{window-title} ~= "^Picture.in.Picture$"'
+run = ['layout floating']
+
+# ── WS i: browsers (swap these bundle ids for the browser you actually use) ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.google.Chrome'
+run = ['layout tiling', 'move-node-to-workspace i']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = org.mozilla.firefox'
+run = ['layout tiling', 'move-node-to-workspace i']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = org.mozilla.zen'
+run = ['layout tiling']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = io.mpv'
+run = ['layout floating']
+
+# ── WS iii: общение ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = ru.keepcoder.Telegram'
+run = ['layout tiling', 'move-node-to-workspace iii']
+
+# Терминал остаётся на текущем workspace, но всегда tiled.
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.mitchellh.ghostty'
+run = ['layout tiling']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = im.riot.app'
+run = ['layout tiling', 'move-node-to-workspace iii']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = org.mozilla.betterbird'
+run = ['layout tiling', 'move-node-to-workspace iii']
+
+# ── WS iv: чтение/документы ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = md.obsidian'
+run = ['layout floating', 'move-node-to-workspace iv']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.logseq.logseq-og'
+run = ['layout tiling', 'move-node-to-workspace iv']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.Preview'
+run = ['layout tiling']
+
+# Readest — книги
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.bilingify.readest'
+run = ['layout tiling', 'move-node-to-workspace iv']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = org.libreoffice.script'
+run = ['layout tiling', 'move-node-to-workspace iv']
+
+# Amperfy — музыка
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = net.hildebrand-it.amperfy-music'
+run = ['layout tiling']
+
+# ── WS D: DAW/аудио ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.ableton.live'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.cockos.reaper'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.ikmultimedia.AmpliTube5'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.izotope.RX11'
+run = ['layout floating']
+
+# ── WS V: видео (mpv выше; плюс монтаж и конвертация) ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.FinalCut'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = fr.handbrake.HandBrake'
+run = ['layout tiling']
+
+# ── WS P: графика/стрим (Pixelmator, OBS, GIMP) ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.obsproject.obs-studio'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.pixelmatorteam.pixelmator.x'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = org.gimp.gimp'
+run = ['layout floating']
+
+# ── WS iii: код-редакторы ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = dev.zed.Zed'
+run = ['layout tiling', 'move-node-to-workspace iii']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.dt.Xcode'
+run = ['layout tiling', 'move-node-to-workspace iii']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.t3tools.t3code'
+run = ['layout tiling', 'move-node-to-workspace iii']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = ai.opencode.desktop'
+run = ['layout tiling', 'move-node-to-workspace iii']
+
+# ── Quick Look: всегда floating ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.finder && test %{window-title} = "Quick Look"'
+run = ['layout floating']
+
+# ── прочие браузеры ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.Safari'
+run = ['layout tiling']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = org.torproject.torbrowser'
+run = ['layout tiling']
+
+# ── утилиты и прочее: floating, без переезда ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.bitwarden.desktop'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = org.localsend.localsendApp'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.gizmolabs.openwhispr'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = org.m0k.transmission'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.culturedcode.ThingsMac'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = so.cap.desktop'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.coteditor.CotEditor'
+run = ['layout tiling']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.todotxt.sleek'
+run = ['layout tiling']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.finder'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.yourcompany.AmneziaVPN'
+run = ['layout floating']
+
+# ── NULL-APP-BUNDLE-ID (кроссплатформенные/электронные без id) ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = NULL-APP-BUNDLE-ID'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.MobileSMS'
+run = ['layout floating', 'move-node-to-workspace iii']
+
+# ── всегда floating: системные окна, утилиты, установщики ──
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.systempreferences'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.ActivityMonitor'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.aone.keka'
+run = ['layout floating']
+
+[[on-window-detected]]
+if = 'test %{app-bundle-id} = com.apple.installer'
+run = ['layout floating']
+
+# ── private / in-house apps: float them ──
+# Uncomment and put your own bundle id here (`aerospace list-windows --all` or
+# `osascript -e 'id of app "AppName"'`). Private bundle ids are not shipped.
+# [[on-window-detected]]
+# if = 'test %{app-bundle-id} = com.example.your-private-app'
+# run = ['layout floating']
+
+[workspace-to-monitor-force-assignment]
+ix = 'secondary'
+
+# ── декларативная раскладка (dwm master-stack) ──
+# Требует сборку из ветки feature/normalization-skeleton (PR #2383).
+# 1 @0.55 — мастер занимает 55% ширины, остальные окна стеком справа.
+[workspace-layout]
+i = '''
+h_tiles
+  1 @0.55
+  v_tiles
+    others
+'''
+iii = '''
+h_tiles
+  1 @0.55
+  v_tiles
+    others
+'''
+
+v = '''
+h_tiles
+  1 @0.55
+  v_tiles
+    others
+'''

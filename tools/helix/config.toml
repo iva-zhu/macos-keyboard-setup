@@ -1,0 +1,11 @@
+# Helix: onedarker theme, bar cursor, Space+C pipes the selection through a shell command.
+
+theme = "onedarker"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "bar"
+select = "bar"
+
+[keys.normal.space]
+C = ["select_all", "shell_pipe"]

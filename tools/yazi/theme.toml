@@ -1,0 +1,6 @@
+[flavor]
+#dark = "gruvbox-dark"
+dark = "flexoki-dark"
+
+[app]
+#overall = { bg = "reset" }
