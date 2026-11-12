@@ -1,0 +1,28 @@
+# local overrides — host names, ports, anything machine-specific
+setup.local.zsh
+*.local.zsh
+
+# backups and editor droppings
+*.bak*
+*.backup*
+*.orig
+*~
+.swp
+.DS_Store
+
+# zsh state
+.zsh_sessions/
+.zsh_history
+history*
+
+# things that must never be published
+*cookies*
+cookies.txt
+*archive.txt
+*.pickle
+*.plist
+*.session
+.env
+
+# nested repositories (vendored themes, shaders, ...)
+**/.git/

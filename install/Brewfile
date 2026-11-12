@@ -1,0 +1,59 @@
+# Homebrew packages used by this setup. `brew bundle --file=install/Brewfile`
+# is idempotent; everything already installed is skipped.
+#
+# Only packages that the configs actually reference are listed. Tangential
+# things live in the optional section at the bottom.
+
+# ── shell / prompt ──────────────────────────────────────────────────
+brew "powerlevel10k"
+brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
+brew "zsh-completions"
+brew "zsh-history-substring-search"
+brew "stow"
+
+# ── CLI toolbox referenced by the zsh aliases ───────────────────────
+brew "bat"
+brew "fzf"
+brew "zoxide"
+brew "fd"
+brew "ripgrep"
+brew "yazi"
+brew "btop"
+brew "fastfetch"
+brew "neovim"
+brew "helix"
+# used by the rm() wrapper: plain `rm` goes to the Trash, `rm -rf` stays real
+brew "trash"
+
+# ── terminal / window manager / keyboard ────────────────────────────
+cask "ghostty"
+cask "karabiner-elements"
+
+tap "nikitabobko/tap"
+cask "nikitabobko/tap/aerospace"
+
+tap "felixkratz/formulae"
+brew "felixkratz/formulae/borders"
+
+# ── fonts (prompt icons + terminal font) ────────────────────────────
+cask "font-meslo-lg-nerd-font"
+cask "font-meslo-for-powerlevel10k"
+
+# ── optional ────────────────────────────────────────────────────────
+# Not needed for the configs to work, handy to have:
+# brew "jq"
+# brew "gh"
+# brew "wget"
+# brew "ncdu"
+# brew "dust"
+# brew "hyperfine"
+# brew "ffmpegthumbnailer"   # video thumbnails in yazi
+# brew "sevenzip"            # archives in yazi
+# cask "font-jetbrains-mono-nerd-font"
+# cask "font-iosevka-nerd-font"
+#
+# Alternatives people usually swap in:
+# brew "eza"                 # instead of ls/gdircolors
+# brew "starship"            # instead of powerlevel10k
+# brew "atuin"               # fuzzy history search with sync
