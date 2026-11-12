@@ -1,4 +1,4 @@
-// Neovim plugin spec: blink.cmp completion with enter-to-accept preset.
+-- Neovim plugin spec: blink.cmp completion with enter-to-accept preset.
 
 vim.pack.add({
 	{ src = "https://github.com/saghen/blink.cmp", version = "v1", name = "blink.cmp" },

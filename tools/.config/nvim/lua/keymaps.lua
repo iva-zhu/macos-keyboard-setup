@@ -1,4 +1,4 @@
-// Neovim keymaps: Ctrl-hjkl window movement, Ctrl-arrows resize, jj to leave insert mode.
+-- Neovim keymaps: Ctrl-hjkl window movement, Ctrl-arrows resize, jj to leave insert mode.
 
 local noarrows = true
 

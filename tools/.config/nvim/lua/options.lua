@@ -1,4 +1,4 @@
-// Neovim options: numbers, 2-space indent, no swap/backup, system clipboard, smooth scroll.
+-- Neovim options: numbers, 2-space indent, no swap/backup, system clipboard, smooth scroll.
 
 local options = {
   -- Clipboard settings

@@ -1,4 +1,4 @@
-// Neovim plugin spec: onedark colorscheme (warmer style).
+-- Neovim plugin spec: onedark colorscheme (warmer style).
 
 vim.pack.add({
         "https://github.com/navarasu/onedark.nvim",

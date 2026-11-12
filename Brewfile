@@ -1,4 +1,4 @@
-# Homebrew packages used by this setup. `brew bundle --file=install/Brewfile`
+# Homebrew packages used by this setup. `brew bundle --file=Brewfile`
 # is idempotent; everything already installed is skipped.
 #
 # Only packages that the configs actually reference are listed. Tangential

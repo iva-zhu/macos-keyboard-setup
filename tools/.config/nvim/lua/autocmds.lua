@@ -1,4 +1,4 @@
-// Neovim autocmds: markdown wrap + gj/gk, trim trailing whitespace on save, yank highlight.
+-- Neovim autocmds: markdown wrap + gj/gk, trim trailing whitespace on save, yank highlight.
 
 -- Enable wrap for *.md + smart kj
 vim.api.nvim_create_autocmd("FileType", {

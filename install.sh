@@ -4,6 +4,7 @@
 #   ./install.sh              # asks a few questions, then symlinks everything
 #   ./install.sh --dry-run    # show what would change, touch nothing
 #   ./install.sh --no-prompt  # no questions, keep current values (scripting)
+#   ./install.sh --packages "zsh ghostty"   # deploy only some packages
 #
 # Steps:
 #   1. sanity checks (macOS, stow present)
@@ -13,7 +14,7 @@
 #      end up in the configs)
 #   4. writes ~/.config/setup.local.zsh (600) and
 #      ~/.config/aerospace/browser.conf
-#   5. moves aside whatever would conflict, to ~/.dotfiles-removed-<date>/
+#   5. moves aside whatever would conflict, to ~/.dotfiles-removed-<date-time>/
 #   6. stow --no-folding, one package per app: zsh ghostty wm keys tools
 #
 # Package dirs mirror $HOME, so plain stow works too:
@@ -21,32 +22,42 @@
 # Undo:  stow -D -t "$HOME" zsh ghostty wm keys tools
 set -euo pipefail
 
-REPO="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 PACKAGES=(zsh ghostty wm keys tools)
-BACKUP="$HOME/.dotfiles-removed-$(date +%Y%m%d)"
+BACKUP="$HOME/.dotfiles-removed-$(date +%Y%m%d-%H%M%S)"
 SETUP_FILE="$HOME/.config/setup.local.zsh"
 BROWSER_FILE="$HOME/.config/aerospace/browser.conf"
 
 DRY=0
 PROMPT=1
-for arg in "$@"; do
-	case $arg in
+while (($#)); do
+	case $1 in
 	--dry-run) DRY=1 ;;
 	--no-prompt) PROMPT=0 ;;
+	--packages)
+		shift
+		read -r -a PACKAGES <<<"${1:-}"
+		;;
 	-h | --help)
-		sed -n '2,24p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+		sed -n '2,25p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
 		exit 0
 		;;
 	*)
-		say_unknown() { :; }
-		echo "unknown option: $arg" >&2
+		echo "unknown option: $1" >&2
 		exit 2
 		;;
 	esac
+	shift
 done
 
 say() { printf '%s\n' "$*"; }
 run() { if ((DRY)); then say "  + $*"; else "$@"; fi; }
+
+mkparent() { # create a backup subdir, replacing a leftover dangling symlink
+	local d=$1
+	[[ -L $d ]] && rm -f -- "$d"
+	mkdir -p -- "$d"
+}
 
 # ── 1. sanity ────────────────────────────────────────────────────────
 [[ $OSTYPE == darwin* ]] || { say "this setup targets macOS"; exit 1; }
@@ -70,7 +81,7 @@ cur_ssh="" cur_lan="" cur_browser="com.apple.Safari"
 cur_port="11434" cur_tport="11112" cur_rtport="18080"
 if [[ -r $SETUP_FILE ]]; then
 	# shellcheck disable=SC1090
-	eval "$(grep -E '^export (SSH_HOST|HOME_LAN_HOST|OLLAMA_LOCAL_PORT|OLLAMA_TUNNEL_PORT|ROUTER_TUNNEL_PORT)=' "$SETUP_FILE" || true)"
+	eval "$(grep -E '^(export )?(SSH_HOST|HOME_LAN_HOST|OLLAMA_LOCAL_PORT|OLLAMA_TUNNEL_PORT|ROUTER_TUNNEL_PORT)=' "$SETUP_FILE" || true)"
 	cur_ssh="${SSH_HOST:-}" cur_lan="${HOME_LAN_HOST:-}"
 	cur_port="${OLLAMA_LOCAL_PORT:-11434}" cur_tport="${OLLAMA_TUNNEL_PORT:-11112}"
 	cur_rtport="${ROUTER_TUNNEL_PORT:-18080}"
@@ -148,7 +159,7 @@ for pkg in "${PACKAGES[@]}"; do
 			anc="$anc/$part"
 			[[ $anc == "$target" ]] && break
 			if [[ -L $anc ]]; then
-				run mkdir -p "$BACKUP/$(dirname "${anc#"$HOME/"}")"
+				run mkparent "$BACKUP/$(dirname "${anc#"$HOME/"}")"
 				run mv "$anc" "$BACKUP/${anc#"$HOME/"}"
 				say "moved aside dir symlink: ${anc#"$HOME/"}"
 				conflicts=$((conflicts + 1))
@@ -156,11 +167,14 @@ for pkg in "${PACKAGES[@]}"; do
 		done
 		[[ -e $target || -L $target ]] || continue
 		if [[ -L $target ]]; then
-			case "$(readlink "$target")" in
-			"$REPO/$pkg/"*) continue ;;
+			# stow writes relative links, so resolve before comparing
+			link="$(readlink "$target")"
+			resolved="$(cd -- "$(dirname -- "$target")" 2>/dev/null && cd -- "$(dirname -- "$link")" 2>/dev/null && pwd -P)/$(basename -- "$link")"
+			case "$resolved" in
+			"$REPO"/*) continue ;;
 			esac
 		fi
-		run mkdir -p "$BACKUP/$(dirname "$rel")"
+		run mkparent "$BACKUP/$(dirname "$rel")"
 		run mv "$target" "$BACKUP/$rel"
 		say "moved aside: $rel"
 		conflicts=$((conflicts + 1))
