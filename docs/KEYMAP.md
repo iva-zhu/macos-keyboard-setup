@@ -53,7 +53,7 @@ Layouts: workspace `i`, `iii`, `v` are `h_tiles` with a 55% master column;
 ## Ghostty
 
 Custom bindings (everything else is Ghostty's stock macOS set, documented in
-`terminal/ghostty/keybinds`):
+`ghostty/.config/ghostty/keybinds`):
 
 | Keys | Action |
 |---|---|

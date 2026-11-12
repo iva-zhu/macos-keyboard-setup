@@ -45,7 +45,7 @@ Full tables in [docs/KEYMAP.md](docs/KEYMAP.md). The short version:
 
 ## Install
 
-Requires macOS on Apple Silicon (the `zsh/platform_path` file has a Linux
+Requires macOS on Apple Silicon (the `zsh/.zsh_platform_path` file has a Linux
 branch too, but see *Not included*).
 
 ```sh
@@ -109,10 +109,10 @@ goes here: `docs/screenshot.png`)_
 
 * **Linux branches.** The zsh config (and `platform_path`, `clipboard`, some
   aliases) has an Arch Linux branch, used on a home server. It is deliberately
-  left out of the published tree for now — the structure (`zsh/platform_path`
+  left out of the published tree for now — the structure (`.zsh_platform_path`
   with an `elif linux*` arm) allows adding it later without rearranging
   anything.
-* **Private app bundle ids.** `wm/aerospace/aerospace.toml` has a commented
+* **Private app bundle ids.** `wm/.config/aerospace/aerospace.toml` has a commented
   placeholder where personal bundle ids go. The published rules only use
   publicly known applications.
 * **Hosts, ports, machine-specific values** — see `setup.local.example.zsh`.
