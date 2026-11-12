@@ -1,0 +1,39 @@
+# Emacs keymap, word-wise arrow motions, End = accept autosuggestion, double-ESC = sudo prefix.
+
+# ── Клавиши и виджеты (по мотивам omz lib/key-bindings.zsh) ──────
+# Коды клавиш берём из terminfo — работает и на mac, и в линукс-терминалах.
+# ↑/↓ (история по префиксу) настроены в ~/.zsh_completions_conf — здесь их не дублируем.
+
+# Emacs-режим: отключаем vi-mode zsh (его дефолт), ESC и hjkl больше не
+# переключают кеймап — редактирование всегда как в обычном терминале.
+bindkey -e
+
+# Home / End / Delete (terminfo + literal-фолбэки)
+# End — принять автоподсказку; в конец строки — Ctrl+E или $
+if [[ -n $terminfo[khome] ]]; then bindkey "$terminfo[khome]" beginning-of-line; else bindkey '\e[H' beginning-of-line '\e[1~' beginning-of-line; fi
+bindkey '\e[F' autosuggest-accept '\e[4~' autosuggest-accept
+[[ -n $terminfo[kdch1] ]] && bindkey "$terminfo[kdch1]" delete-char
+bindkey '\e[3~' delete-char
+
+# Ctrl+стрелки и Alt+стрелки — прыжки по словам
+for k in '\e[1;5C' '\e[5C' '\e\e[C' '\e\eOC' '\e\e[1;5C'; do
+	bindkey -M emacs "$k" forward-word
+done
+for k in '\e[1;5D' '\e[5D' '\e\e[D' '\e\eOD' '\e\e[1;5D'; do
+	bindkey -M emacs "$k" backward-word
+done
+
+# ── Двойной ESC: добавить/убрать sudo в начале строки ────────────
+# Пустая строка — подставить предыдущую команду из истории.
+sudo-command-line() {
+	if [[ -z $BUFFER ]]; then
+		LBUFFER=$(fc -ln -1)
+	fi
+	if [[ $BUFFER == sudo\ * ]]; then
+		LBUFFER=${LBUFFER#sudo }
+	else
+		LBUFFER="sudo $LBUFFER"
+	fi
+}
+zle -N sudo-command-line
+bindkey '\e\e' sudo-command-line

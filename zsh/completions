@@ -1,0 +1,43 @@
+# Completion: compinit with a daily freshness check, menu style, LS_COLORS cache, menuselect keys.
+# Sourced from ~/.zshrc as ~/.zsh_completions_conf.
+
+# Completion (полная проверка раз в сутки, иначе быстрый дамп)
+autoload -Uz compinit
+_zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompdump"
+[[ -d ${_zcompdump:h} ]] || mkdir -p "${_zcompdump:h}"
+if [[ -n ${~_zcompdump}(#qN.mh-24) ]]; then
+  compinit -C -d "$_zcompdump"
+else
+  compinit -d "$_zcompdump"
+fi
+unset _zcompdump
+
+# Меню автодополнения с выбором стрелками
+zmodload zsh/complist
+zstyle ':completion:*' menu select
+
+# Цвета (LS_COLORS) для ls и меню автодополнения.
+# Вывод gdircolors кэшируется — без форка при каждом старте шелла;
+# перегенерация, если кэша нет или он старше недели.
+_lsc="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/LS_COLORS.zsh"
+if [[ ! -r $_lsc || -n ${~_lsc}(#qN.mw-1) ]]; then
+	[[ -d ${_lsc:h} ]] || mkdir -p "${_lsc:h}"
+	if (( $+commands[gdircolors] )); then gdircolors -b >| "$_lsc"
+	elif (( $+commands[dircolors] )); then dircolors -b >| "$_lsc"; fi
+fi
+[[ -r $_lsc ]] && source "$_lsc"
+unset _lsc
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# регистронезависимое дополнение и оформление списка
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*:descriptions' format '%F{yellow}── %d ──%f'
+zstyle ':completion:*:matches' list-colors ${(s.:.)LS_COLORS}
+
+# Навигация по меню стрелками
+bindkey -M menuselect '^[[A' up-line-or-history
+bindkey -M menuselect '^[[B' down-line-or-history
+bindkey -M menuselect '^[[C' forward-char
+bindkey -M menuselect '^[[D' backward-char
+
+# Shift+Tab — предыдущий вариант
+bindkey -M menuselect '^[[Z' reverse-menu-complete

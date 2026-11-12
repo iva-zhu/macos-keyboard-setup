@@ -1,0 +1,191 @@
+# Aliases and a few shell functions: editor, ls variants, trash-based rm, tunnels, yazi, AeroSpace fzf picker.
+# Hosts/ports come from ~/.config/setup.local.zsh and degrade silently when it is absent.
+
+# ── Редактор ──────────────────────────────────────────────────────
+if command -v nvim >/dev/null 2>&1; then
+	export EDITOR=nvim
+	export VISUAL=nvim
+	alias vim='nvim'
+	alias vi='nvim'
+    alias v='nvim'
+	alias vis='nvim "+set si"'
+elif command -v vim >/dev/null 2>&1; then
+	export EDITOR=vim
+	export VISUAL=vim
+else
+	export EDITOR=vi
+	export VISUAL=vi
+fi
+
+# ── Тысяча вариантов выхода ────────────────────────────────────────
+alias :q="exit"
+alias :wq="exit"
+alias bye='exit'
+alias die='exit'
+alias quit='exit'
+
+# ── Навигация ─────────────────────────────────────────────────────
+alias home='cd ~'
+alias bd='cd "$OLDPWD"'
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+# ── Списки файлов ─────────────────────────────────────────────────
+if [[ $OSTYPE == darwin* ]]; then
+	alias ls='ls -FhG' # BSD/macOS
+else
+	alias ls='ls -Fh --color=always' # GNU ls
+fi
+alias l='ls -lAFh'     # длинный список, размер, тип
+alias ll='ls -l'       # длинный список
+alias lS='ls -1FSsh'   # размер и имя, по размеру
+alias lr='ls -tRFh'    # рекурсивно, по дате
+alias lsr='ls -lARFh'  # рекурсивно, всё
+alias lt='ls -ltFh'    # по дате
+
+# ── Работа с файлами ──────────────────────────────────────────────
+alias mkdir='mkdir -p'
+alias mv='mv -iv'
+alias cp='cp -iv'
+alias ln='ln -i'
+# rm: с флагами r+f — настоящее удаление, иначе — в корзину
+(( $+aliases[rm] )) && unalias rm  # на случай повторного source со старым алиасом в сессии
+rm() {
+	if ! command -v trash >/dev/null 2>&1; then command rm "$@"; return; fi
+	local flags="" args=() arg noMoreOpts=0
+	for arg in "$@"; do
+		if (( noMoreOpts )) || [[ $arg != -* || $arg == - ]]; then
+			args+=("$arg")
+		elif [[ $arg == -- ]]; then
+			noMoreOpts=1
+		else
+			flags+="${arg#-}"
+		fi
+	done
+	if [[ $flags == *[rR]* && $flags == *[fF]* ]]; then
+		command rm "$@"       # -rf/-fr и т.п. — по-настоящему
+	else
+		(( ${#args} )) || return 1
+		trash -v "${args[@]}" # остальное — в корзину
+	fi
+}
+alias rsync='rsync --info=progress2 --human-readable --partial'
+
+# ── Просмотр ──────────────────────────────────────────────────────
+alias bat="bat --paging=never "
+alias less='less -R'
+
+# ── Сеть и туннели ────────────────────────────────────────────────
+# Хосты и порты — из ~/.config/setup.local.zsh (шаблон: setup.local.example.zsh).
+# Файла нет или SSH_HOST пуст — туннель-алиасы просто не создаются, шелл не падает.
+alias telnet="nocorrect telnet"
+alias ping='ping -c 10'
+alias ports='sudo lsof -nP -iTCP -sTCP:LISTEN'
+if [[ $OSTYPE == darwin* && -n ${SSH_HOST:-} ]]; then
+	alias llm-tunnel="ssh -fN -L ${OLLAMA_TUNNEL_PORT:-11112}:127.0.0.1:${OLLAMA_LOCAL_PORT:-11434} ${SSH_HOST:?}"
+	alias router-tunnel="ssh -N -T \
+		-o ExitOnForwardFailure=yes \
+		-L 127.0.0.1:${ROUTER_TUNNEL_PORT:-18080}:${HOME_LAN_HOST:?}:80 \
+		${SSH_HOST:?}"
+fi
+
+# ── Пакетный менеджер ─────────────────────────────────────────────
+if [[ $OSTYPE == darwin* ]]; then
+	# Homebrew
+	export HOMEBREW_NO_AUTO_UPDATE=1
+	export HOMEBREW_NO_ENV_HINTS=1
+	export HOMEBREW_NO_INSTALL_CLEANUP=1
+	export HOMEBREW_NO_ASK=1
+	export HOMEBREW_UPGRADE_GREEDY=1
+	alias update="brew update && brew upgrade --greedy && brew cleanup"
+	alias hss='hugo server --noHTTPCache'
+elif [[ $OSTYPE == linux* ]]; then
+	# Arch Linux / pacman
+	alias update='sudo pacman -Syu --noconfirm && sudo paccache -rk2 -ruk0'
+	alias pku='sudo pkgfile -u'
+	alias logs='sudo journalctl -f'
+	alias services='systemctl --type=service --state=running'
+	alias hx='helix'
+fi
+
+# Подсказка пакета при неизвестной команде (только серверe; brew which-formula на mac слишком медленный)
+if [[ $OSTYPE != darwin* ]]; then
+	command_not_found_handler() {
+		local cmd="$1" pkgs p
+		pkgs=$(pkgfile -b -- "$cmd" 2>/dev/null)
+		if [[ -n $pkgs ]]; then
+			printf 'Вы имели в виду:\n'
+			for p in ${(f)pkgs}; do printf '  pacman -S %s\n' "${p##*/}"; done
+		fi
+		printf 'zsh: command not found: %s\n' "$cmd"
+		return 127
+	}
+fi
+
+# ── Уведомления ───────────────────────────────────────────────────
+alert() {
+	local exit_status=$? icon last_command title
+	if [ "$exit_status" -eq 0 ]; then
+		icon=terminal
+		title=Done
+	else
+		icon=error
+		title=Failed
+	fi
+	last_command=$(history 1 | sed -e 's/^[[:space:]]*[0-9]\+[[:space:]]*//;s/[;&|][[:space:]]*alert$//')
+
+	case $OSTYPE in
+	darwin*)
+		if command -v osascript >/dev/null 2>&1; then
+			MYBASH_ALERT_MESSAGE=$last_command MYBASH_ALERT_TITLE=$title \
+				osascript -e 'display notification (system attribute "MYBASH_ALERT_MESSAGE") with title (system attribute "MYBASH_ALERT_TITLE")'
+		else
+			printf '%s: %s\n' "$title" "$last_command"
+		fi
+		;;
+	*)
+		if command -v notify-send >/dev/null 2>&1; then
+			notify-send --urgency=low -i "$icon" "$last_command"
+		else
+			printf '%s: %s\n' "$title" "$last_command"
+		fi
+		;;
+	esac
+}
+
+# ── Yazi ──────────────────────────────────────────────────────────
+function y() {
+	local tmp cwd; tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd" || builtin true
+	command rm -f -- "$tmp"
+}
+alias ya='y'
+
+# ── Прочее ────────────────────────────────────────────────────────
+alias c='clear'
+alias clr="clear"
+alias ckear="clear"
+alias path='print -l $path'
+
+# ── Русская раскладка ─────────────────────────────────────────────
+alias ды='ls'
+alias сдуфк="clear"
+alias учше="exit"
+alias тмшь="nvim"
+[[ -n ${SSH_HOST:-} ]] && alias ыыр="ssh ${SSH_HOST:?}"
+alias я='z'
+alias гзвфеу='update'
+
+# ── AeroSpace (mac) ───────────────────────────────────────────────
+if [[ $OSTYPE == darwin* ]] && command -v aerospace >/dev/null 2>&1 && command -v fzf >/dev/null 2>&1; then
+	# ff: выбрать окно AeroSpace через fzf и переключиться на него
+	ff() {
+		aerospace list-windows --all \
+			| fzf --prompt='window ❯ ' --delimiter='|' --with-nth=2,3 \
+				--bind 'enter:execute-silent(bash -c "aerospace focus --window-id {1}")+abort'
+	}
+fi

@@ -1,0 +1,25 @@
+# Shell options and history settings (shared history, no dupes, autocd, typo correction).
+# Sourced from ~/.zshrc as ~/.zsh_options.
+
+# History
+HISTSIZE=100000
+SAVEHIST=100000
+HISTFILE="$HOME/.zsh_history"
+
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_SPACE   # команды с ведущим пробелом не пишутся в историю
+setopt HIST_REDUCE_BLANKS
+setopt HIST_VERIFY
+
+# Навигация
+setopt AUTO_CD           # можно просто написать имя каталога вместо cd имя
+setopt AUTO_PUSHD        # cd запоминает стек каталогов
+setopt PUSHD_IGNORE_DUPS
+WORDCHARS=${WORDCHARS//[\/]}  # Ctrl-W стирает слово, а не весь путь
+
+# Исправление опечаток в именах команд
+setopt CORRECT

@@ -1,0 +1,78 @@
+# Pager, colored man pages, extract, genpass, and epoch<->date helpers.
+
+# ── Пейджер и цветные man-страницы (по мотивам omz colored-man-pages) ──
+export LESSHISTFILE=-
+export LESS='-FRX'
+# Цветные man-страницы
+export GROFF_NO_SGR=1
+export LESS_TERMCAP_mb=$'\e[1;31m'
+export LESS_TERMCAP_md=$'\e[1;36m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[1;33;44m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[1;32m'
+
+# ── extract: умный распаковщик (по мотивам omz-плагина extract) ──
+# bsdtar сам определяет формат: tar, tar.gz/bz2/xz, zip, 7z, gz, bz2 и т.д.
+# На macOS bsdtar встроен; на Arch идёт с libarchive.
+
+extract() {
+	if [[ $# -ne 1 ]]; then
+		print -u2 "usage: extract <архив>"
+		return 1
+	fi
+	if [[ ! -f $1 ]]; then
+		print -u2 "extract: нет файла: $1"
+		return 1
+	fi
+	if ! (( $+commands[bsdtar] )); then
+		print -u2 "extract: нужен bsdtar (Arch: pacman -S libarchive)"
+		return 1
+	fi
+	bsdtar -xvf "$1"
+}
+
+# ── Мелкие утилиты (по мотивам omz genpass / tt) ─────────────────
+
+# genpass [длина] [s|a]: пароль из /dev/urandom.
+#   genpass          -> 20 алфанумерных символов
+#   genpass 32       -> 32 символа
+#   genpass 24 s     -> со знаками препинания
+genpass() {
+	local len=${1:-20} mode=${2:-a} alphabet
+	if [[ $mode == s ]]; then
+		alphabet='[:alnum:][:punct:]'
+	else
+		alphabet='[:alnum:]'
+	fi
+	LC_ALL=C tr -dc "$alphabet" </dev/urandom | head -c "$len"
+	print
+}
+
+# ts: дата -> epoch (например: ts 2026-10-18, "ts 2026-10-18 15:30")
+ts() {
+	local d="$*"
+	if [[ -z $d ]]; then
+		date +%s
+	elif [[ $OSTYPE == darwin* ]]; then
+		date -j -f '%Y-%m-%d %H:%M:%S' "$d" +%s 2>/dev/null \
+			|| date -j -f '%Y-%m-%d %H:%M' "$d" +%s 2>/dev/null \
+			|| date -j -f '%Y-%m-%d' "$d" +%s
+	else
+		date -d "$d" +%s
+	fi
+}
+
+# unts <epoch>: epoch -> человекочитаемая дата (в локальном времени)
+unts() {
+	if [[ -z $1 ]]; then
+		print -u2 "usage: unts <unix timestamp>"
+		return 1
+	fi
+	if [[ $OSTYPE == darwin* ]]; then
+		date -r "$1"
+	else
+		date -d "@$1"
+	fi
+}

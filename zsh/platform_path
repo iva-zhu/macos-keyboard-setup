@@ -1,0 +1,22 @@
+# Plugin locations (fpath + p10k/autosuggestions/syntax-highlighting) per OS.
+# macOS branch is Homebrew/Apple Silicon; the Linux branch is kept for the server setup.
+
+# ── Платформенные пути ───────────────────────────────────────────────────
+if [[ $OSTYPE == darwin* ]]; then
+  # macOS + Homebrew
+  fpath+=("/opt/homebrew/share/zsh-completions")
+  fpath+=("/opt/homebrew/share/zsh/site-functions")
+  p10k_theme="/opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme"
+  zsh_autosuggestions="/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  zsh_syntax_highlighting="/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  zsh_history_substring_search="/opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
+elif [[ $OSTYPE == linux* ]]; then
+  # Arch Linux
+  fpath+=("/usr/share/zsh-completions")
+  fpath+=("/usr/share/zsh/site-functions")
+  p10k_theme="/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme"
+  zsh_autosuggestions="/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  zsh_syntax_highlighting="/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  # AUR: zsh-history-substring-search (если не установлен, просто не подхватится)
+  zsh_history_substring_search="/usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh"
+fi

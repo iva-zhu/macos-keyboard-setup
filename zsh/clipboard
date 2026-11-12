@@ -1,0 +1,54 @@
+# Clipboard helpers: copyfile, copypath and Ctrl-O to copy the current command line
+# (pbcopy / wl-copy / xclip / xsel / OSC 52 over SSH).
+
+# ── Буфер обмена (по мотивам omz copyfile / copybuffer) ──────────
+# Кроссплатформенно: pbcopy (macOS) / wl-copy (Wayland) / xclip, xsel (X11).
+
+_copy_to_clipboard() {
+	# Локальная сессия macOS.
+	if (( $+commands[pbcopy] )) && [[ -z $SSH_CONNECTION ]]; then
+		pbcopy
+	# Wayland-сессия.
+	elif [[ -n $WAYLAND_DISPLAY ]] && (( $+commands[wl-copy] )); then
+		wl-copy
+	# X11-сессия.
+	elif [[ -n $DISPLAY ]] && (( $+commands[xclip] )); then
+		xclip -in -selection clipboard
+	elif [[ -n $DISPLAY ]] && (( $+commands[xsel] )); then
+		xsel --clipboard --input
+	# Удалённая сессия без дисплея: OSC 52 — буфер берёт локальный терминал.
+	elif [[ -n $SSH_CONNECTION ]]; then
+		printf '\e]52;c;%s\a' "$(base64 | tr -d '\n')"
+	else
+		print -u2 "copyfile: нет способа скопировать (нет дисплея и утилит буфера)"
+		return 1
+	fi
+}
+
+# copyfile <файл>: содержимое файла в буфер обмена
+copyfile() {
+	if [[ $# -ne 1 || ! -r $1 ]]; then
+		print -u2 "usage: copyfile <читаемый файл>"
+		return 1
+	fi
+	_copy_to_clipboard < "$1"
+}
+
+# Ctrl-O: текущая командная строка в буфер обмена
+copybuffer() {
+	print -rn -- "$BUFFER" | _copy_to_clipboard
+	zle -M "Скопировано в буфер обмена"
+}
+zle -N copybuffer
+bindkey '^O' copybuffer
+
+# copypath [путь]: путь к файлу/директории (по умолчанию — текущей) в буфер обмена
+copypath() {
+	local p=${1:-.}
+	if [[ ! -e $p ]]; then
+		print -u2 "copypath: не существует: $p"
+		return 1
+	fi
+	print -rn -- "${p:a}" | _copy_to_clipboard
+	print -u2 "Скопировано: ${p:a}"
+}
