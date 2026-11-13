@@ -60,7 +60,12 @@ One command. It asks a handful of questions, then symlinks everything into
 ```sh
 ./install.sh --dry-run    # print what would happen, change nothing
 ./install.sh --no-prompt  # no questions, keep current values
+./install.sh --packages "zsh ghostty tools"   # skip wm/keys, see below
 ```
+
+`--packages` matters when the machine keeps personal copies: `wm` (AeroSpace)
+and `keys` (Karabiner) hold bundle ids and a keyboard MAC that must not go into
+git, so on the exporting machine only `zsh ghostty tools` are deployed.
 
 The questions are all optional — press Enter to keep the shown default, or `-`
 to clear the value:
