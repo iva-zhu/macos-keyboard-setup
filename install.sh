@@ -218,4 +218,5 @@ fi
 say ""
 say "done. open a new shell (or: exec zsh)."
 say "undo:  stow -D -t \"\$HOME\" -d \"$REPO\" ${PACKAGES[*]}"
-say "moved aside (if any): $BACKUP"
+((conflicts)) && say "moved aside: $BACKUP"
+exit 0
