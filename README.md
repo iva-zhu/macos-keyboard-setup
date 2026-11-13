@@ -85,6 +85,11 @@ stow -D -t ~ zsh ghostty wm keys tools             # remove the links
 
 Some files need a manual step after linking:
 
+* Yazi — the flavors named in `theme.toml` are not files but packages; the last
+  step of `install.sh` runs `ya pkg install` for them. If it is skipped (`ya`
+  missing), yazi starts with `Theme load failed` and the built-in theme. A
+  flavor whose repository contains symlinks to directories cannot be installed
+  that way — keep it commented out in `package.toml`.
 * Karabiner-Elements — enable the Karabiner driver, then the profile in
   `keys/karabiner.json` is picked up. Caps Lock must be remapped there before
   any Hyper binding works.

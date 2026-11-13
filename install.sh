@@ -16,6 +16,8 @@
 #      ~/.config/aerospace/browser.conf
 #   5. moves aside whatever would conflict, to ~/.dotfiles-removed-<date-time>/
 #   6. stow --no-folding, one package per app: zsh ghostty wm keys tools
+#   7. `ya pkg install` for the yazi flavors named in theme.toml (if `ya` is
+#      installed); a failure here never aborts the rest.
 #
 # Package dirs mirror $HOME, so plain stow works too:
 #   stow --no-folding -t ~ zsh ghostty wm keys tools
@@ -39,7 +41,8 @@ while (($#)); do
 		read -r -a PACKAGES <<<"${1:-}"
 		;;
 	-h | --help)
-		sed -n '2,25p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+		# header comment block only: stop at the first line that is not a comment
+		awk 'NR > 1 && /^#/ { sub(/^# ?/, ""); print; next } NR > 1 { exit }' "${BASH_SOURCE[0]}"
 		exit 0
 		;;
 	*)
@@ -189,6 +192,27 @@ if ((DRY)); then
 	say "  + stow --no-folding -v -t $HOME -d $REPO ${PACKAGES[*]}"
 else
 	stow --no-folding -v -t "$HOME" -d "$REPO" "${PACKAGES[@]}"
+fi
+
+# ── 7. yazi flavors ──────────────────────────────────────────────────
+# theme.toml names a flavor, but only package.toml is stowed — the flavor
+# payloads live in .config/yazi/flavors/ and are fetched by `ya pkg install`.
+YAZI_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/yazi"
+if [[ -f $YAZI_CONF/package.toml ]] || { ((DRY)) && [[ -f $REPO/tools/.config/yazi/package.toml ]]; }; then
+	say ""
+	say "yazi flavors:"
+	if ! command -v ya >/dev/null; then
+		say "  ya not found — skipped (brew install yazi)"
+	elif ((DRY)); then
+		say "  + cd $YAZI_CONF && ya pkg install"
+	elif (cd "$YAZI_CONF" && ya pkg install); then
+		say "  installed"
+	else
+		# never fail the whole install over a theme
+		say "  ya pkg install failed — yazi falls back to its built-in theme."
+		say "  a flavor whose repo contains symlinks to directories cannot be installed:"
+		say "  comment it out in $YAZI_CONF/package.toml and re-run this step."
+	fi
 fi
 
 say ""
